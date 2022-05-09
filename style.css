@@ -3,8 +3,8 @@
 body {
     font-family: 'Poppins', sans-serif;
       font-size: 1rem;
-      color: #fff;
-      background-color: #010101;
+      color: #fff !important;
+      background-color: #010101 !important;
   }
   .home-div{
     text-align: center;
@@ -15,11 +15,33 @@ body {
     margin-right: auto;
     align-self: flex-end;
     margin: 0 auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
 
   }
   .text-home {
     font-size :5rem;
   }
+
+  @media (max-width: 400px) and (min-width: 0px){
+    .text-home {
+      font-size :3rem;
+    }
+    .title-degrad{
+      font-size :3rem !important;
+    }
+    .home-div{
+      position: absolute;
+      top: 50%;
+      left: 54% !important;
+      margin-right: -50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+
   
   .title-degrad{
     font-family: 'Poppins', sans-serif;
