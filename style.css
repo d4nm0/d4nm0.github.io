@@ -148,6 +148,7 @@ figure .card-img-top {
     border-radius: .5rem;
     cursor: pointer;
     backdrop-filter: blur(5px);
+    -webkit-backdrop-filter:blur(5px);
     transition: .3s;
 }
 
