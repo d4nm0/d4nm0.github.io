@@ -1,0 +1,251 @@
+<html>
+  <head>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js"></script>
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-analytics.js";
+      import { getDatabase, ref, push, set, get, child } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
+
+      // TODO: Add SDKs for Firebase products that you want to use
+      // https://firebase.google.com/docs/web/setup#available-libraries
+
+      // Your web app's Firebase configuration
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      const firebaseConfig = {
+        apiKey: "AIzaSyBJUoud9fEIj-vOhBCIXIhEGFhfyQJEFFg",
+        authDomain: "testfaucet-60525.firebaseapp.com",
+        databaseURL: "https://testfaucet-60525-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "testfaucet-60525",
+        storageBucket: "testfaucet-60525.appspot.com",
+        messagingSenderId: "1038404459517",
+        appId: "1:1038404459517:web:419d6a6c4314d3177fd794",
+        measurementId: "G-HPX1PYJ4TG"
+      };
+      document.addEventListener("DOMContentLoaded", function() {
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+
+        const flipCoinButton = document.getElementById("flip-coin");
+        const coinElement = document.getElementById("coin");
+        const message = document.getElementById("message");
+        const nomberSatTemp = document.getElementById("nomberSatTemp");
+        const sensatbtn = document.getElementById("senSat");
+
+        // Obtenez une référence du service de base de données
+        const db = getDatabase(app);
+        const dbRef = ref(getDatabase());
+        var playActivate = false;
+
+        VerifyIp();
+
+        sensatbtn.addEventListener("click", function() {
+          payInvoice();
+        });
+        flipCoinButton.addEventListener("click", function() {
+          var dateTime = Date.now() / 1000;
+          console.log(dateTime);
+          // Obtenez une référence au nœud où vous voulez ajouter des données
+          const myRef = ref(db, "UserLog");
+
+          // Utilisez la méthode push() pour ajouter un nouveau nœud enfant avec une clé unique
+          const newChildRef = push(myRef);
+
+          var requestOptions = {
+            method: "GET",
+            redirect: "follow"
+          };
+
+          fetch("https://api.ipify.org?format=json", requestOptions)
+            .then(response => response.text())
+            .then(result => {
+              if (result) {
+                var resultJson = JSON.parse(result);
+                // Définissez des données sur le nouveau nœud enfant à l'aide de la méthode set()
+                set(newChildRef, {
+                  ip: resultJson.ip,
+                  datetime: dateTime
+                });
+              }
+            })
+            .catch(error => console.log("error", error));
+
+          coinElement.style.animation = "flipCoin 1s ease-in-out forwards";
+          setTimeout(function() {
+            const flip = Math.random() < 0.5 ? "heads" : "tails";
+            if ("tails" === flip) {
+              const nombre = Math.floor(Math.random() * 10) + 1;
+              message.textContent = "You won " + nombre + "!\n Put your LN address in the field above.";
+              nomberSatTemp.innerHTML = nombre;
+              const textfield = document.getElementById("invoiceLn");
+              textfield.style.display = "block";
+              const senSat = document.getElementById("senSat");
+              senSat.style.display = "block";
+              VerifyIp();
+            } else {
+              message.textContent = "Sorry, you lost.";
+              VerifyIp();
+            }
+            coinElement.style.animation = "";
+          }, 1000);
+        });
+
+        function VerifyIp() {
+          const monBouton = document.getElementById("flip-coin");
+          const myButton = document.querySelectorAll("button");
+          const myVarElement = document.getElementById("playActivate");
+          var requestOptions = {
+            method: "GET",
+            redirect: "follow"
+          };
+          fetch("https://api.ipify.org?format=json", requestOptions)
+            .then(response => response.text())
+            .then(result => {
+              if (result) {
+                var resultJson = JSON.parse(result);
+                get(child(dbRef, `UserLog`))
+                  .then(elm => {
+                    if (elm.exists()) {
+                      elm.forEach(element => {
+                        if (resultJson.ip === element.val().ip) {
+                          if (Date.now() / 1000 - element.val().datetime >= 1800) {
+                            // console.log("tu peux jouer sa fais 30 min");
+                            playActivate = true;
+                            myVarElement.innerHTML = playActivate;
+                            myButton.forEach(button => {
+                              console.log(button);
+                              if (button.id === "flip-coin") {
+                                button.disabled = false;
+                              }
+                            });
+                            monBouton.style.display = "block";
+                          } else {
+                            // console.log("tu peux pas jouer sa fais pas 30 min");
+                            playActivate = false;
+                            myVarElement.innerHTML = playActivate;
+                            myButton.forEach(button => {
+                              if (button.id === "flip-coin") {
+                                button.disabled = true;
+                              }
+                            });
+                            monBouton.style.display = "block";
+                          }
+                        } else {
+                          // console.log("ip not available");
+                          playActivate = false;
+                          myVarElement.innerHTML = playActivate;
+                          myButton.forEach(button => {
+                            if (button.id === "flip-coin") {
+                              button.disabled = false;
+                            }
+                          });
+                          monBouton.style.display = "block";
+                        }
+                      });
+                    } else {
+                      // console.log("No data available");
+                      playActivate = true;
+                      myVarElement.innerHTML = playActivate;
+                      myButton.forEach(button => {
+                        if (button.id === "flip-coin") {
+                          button.disabled = false;
+                        }
+                      });
+                      monBouton.style.display = "block";
+                    }
+                  })
+                  .catch(error => {
+                    console.error(error);
+                    playActivate = false;
+                    myVarElement.innerHTML = playActivate;
+                    myButton.forEach(button => {
+                      if (button.id === "flip-coin") {
+                        button.disabled = true;
+                      }
+                    });
+                    monBouton.style.display = "block";
+                  });
+              }
+            })
+            .catch(error => console.log("error", error));
+        }
+
+        function payInvoice() {
+          let valeur = document.getElementById("invoiceLn").value;
+          let nomberSatTemp = document.getElementById("nomberSatTemp").innerText;
+
+          var myHeaders = new Headers();
+          myHeaders.append("X-Api-Key", "pak_t8EzUyd9zVYZDSZGjFqyPDwbAJYUCUPG");
+          myHeaders.append("Content-Type", "application/json");
+          myHeaders.append(
+            "Cookie",
+            "PHPSESSID=vmusii002gi0u81rg9ugc3qen8; _csrf=9dc3079c7005e0afb7372c3ddfba5f6a6336764c506f3829efae5415ad7ff80fa%3A2%3A%7Bi%3A0%3Bs%3A5%3A%22_csrf%22%3Bi%3A1%3Bs%3A32%3A%22HvZ_FH9j4lZ9pYJm3BdYXQXSndoY2oM8%22%3B%7D"
+          );
+
+          var raw = JSON.stringify({
+            amt_msat: nomberSatTemp * 1000,
+            ln_address: valeur,
+            passThru: {
+              tick: "tock"
+            }
+          });
+
+          var requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+            redirect: "follow"
+          };
+
+          fetch("https://api.lnpay.co/v1/wallet/waka_6aG8iblb9i4M9Bx0Qz4ZCFIQ/lnurlp/pay", requestOptions)
+            .then(response => response.text())
+            .then(result => console.log(result))
+            .catch(error => console.log("error", error));
+        }
+      });
+    </script>
+    <title>Heads or tails game</title>
+    <style>
+      #coin {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        background-image: url(https://i.ibb.co/V3kTy7K/pixel-removebg-preview.png);
+        background-size: contain;
+        background-repeat: no-repeat;
+        border-radius: 50%;
+      }
+
+      @keyframes flipCoin {
+        from {
+          transform: rotateY(0deg);
+        }
+        to {
+          transform: rotateY(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Heads or tails game</h1>
+    <p>
+      You can flip a coin every 30 minutes.<br />
+      Depending on the result, you will win a certain number of coins, <br />which you can withdraw by providing your
+      address.(ex. d4nm0@pay.bbw.sv)
+    </p>
+    <p>You can toss the coin every 30 minutes.</p>
+    <p>
+      This doesn't work on its own, it needs to be hosted and the earned coins need to come from somewhere. <br />You can donate
+      here: d4nm0@pay.bbw.sv
+    </p>
+    <button id="flip-coin" class="button" style="display: none;">Flip the coin</button>
+
+    <span id="playActivate" style="display: none;"></span>
+    <input type="text" id="invoiceLn" placeholder="Ln Adresse (ex. d4nm0@pay.bbw.sv)" style="display: none;" />
+    <button id="senSat" style="display: none;">send sats</button> <span id="nomberSatTemp" style="display: none;"></span>
+    <p id="message"></p>
+    <div id="coin"></div>
+  </body>
+</html>
