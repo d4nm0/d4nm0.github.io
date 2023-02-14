@@ -173,6 +173,8 @@
         }
 
         function payInvoice() {
+            const senSat = document.getElementById("senSat");
+            senSat.style.display = "none";
           let valeur = document.getElementById("invoiceLn").value;
           let nomberSatTemp = document.getElementById("nomberSatTemp").innerText;
 
@@ -201,7 +203,8 @@
 
           fetch("https://api.lnpay.co/v1/wallet/waka_6aG8iblb9i4M9Bx0Qz4ZCFIQ/lnurlp/pay", requestOptions)
             .then(response => response.text())
-            .then(result => window.location.reload())
+            .then(result => {
+              window.location.reload()})
             .catch(error => console.log("error", error));
         }
       });
