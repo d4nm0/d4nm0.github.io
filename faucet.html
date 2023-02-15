@@ -1,6 +1,12 @@
 <html>
   <head>
-    <script> var script = document.createElement('script'); script.dataset.cache = true; script.dataset.websiteId = '9c7adc50-4543-4931-b77e-d336a7086be0'; script.src='https://s.abla.io/abla.js'; document.getElementsByTagName('head')[0].appendChild(script);</script>
+    <script>
+      var script = document.createElement("script");
+      script.dataset.cache = true;
+      script.dataset.websiteId = "9c7adc50-4543-4931-b77e-d336a7086be0";
+      script.src = "https://s.abla.io/abla.js";
+      document.getElementsByTagName("head")[0].appendChild(script);
+    </script>
     <script type="module" src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js"></script>
     <script type="module">
@@ -174,8 +180,8 @@
         }
 
         function payInvoice() {
-            const senSat = document.getElementById("senSat");
-            senSat.style.display = "none";
+          const senSat = document.getElementById("senSat");
+          senSat.style.display = "none";
           let valeur = document.getElementById("invoiceLn").value;
           let nomberSatTemp = document.getElementById("nomberSatTemp").innerText;
 
@@ -205,7 +211,8 @@
           fetch("https://api.lnpay.co/v1/wallet/waka_6aG8iblb9i4M9Bx0Qz4ZCFIQ/lnurlp/pay", requestOptions)
             .then(response => response.text())
             .then(result => {
-              window.location.reload()})
+              window.location.reload();
+            })
             .catch(error => console.log("error", error));
         }
       });
@@ -230,6 +237,72 @@
           transform: rotateY(360deg);
         }
       }
+
+      body {
+        background-color: #0a0d15;
+        text-align: center;
+      }
+
+      p {
+        color: #adadb2;
+      }
+
+      h1 {
+        color: #fefdff;
+      }
+
+      .button {
+        display: block;
+        background: linear-gradient(to right, #796ffd, #d7c4ff);
+        background-color: #796ffd;
+        color: black;
+        /* font-family: Trebuchet MS; */
+        font-size: 18px;
+        font-weight: 400;
+        /* font-style: italic; */
+        text-decoration: none;
+        padding: 14px 15px;
+        border: 0px solid #000;
+        border-radius: 10px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        margin-left: auto;
+        margin-right: auto;
+        cursor: pointer;
+      }
+
+      .button:disabled {
+        cursor: not-allowed;
+        filter: grayscale(80%);
+        display: block;
+        background: linear-gradient(to right, #796ffd, #d7c4ff);
+        background-color: #796ffd;
+        color: black;
+        /* font-family: Trebuchet MS; */
+        font-size: 18px;
+        font-weight: 400;
+        /* font-style: italic; */
+        text-decoration: none;
+        padding: 14px 15px;
+        border: 0px solid #000;
+        border-radius: 10px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      input {
+        display: block;
+        padding: 10px;
+        border-radius: 8px;
+        background-color: #0a0d15;
+        color: #adadb2;
+        width: 300px;
+        margin-left: auto;
+        margin-right: auto;
+      }
     </style>
   </head>
   <body>
@@ -247,8 +320,12 @@
     <button id="flip-coin" class="button" style="display: none;">Flip the coin</button>
 
     <span id="playActivate" style="display: none;"></span>
-    <input type="text" id="invoiceLn" placeholder="Ln Adresse (ex. d4nm0@pay.bbw.sv)" style="display: none;" />
-    <button id="senSat" style="display: none;">send sats</button> <span id="nomberSatTemp" style="display: none;"></span>
+    <div style="display: inline-flex;">
+      <input type="text" id="invoiceLn" placeholder="Ln Adresse (ex. d4nm0@pay.bbw.sv)" style="display: none;" />
+      <button id="senSat" style="display: none;margin-left: -30px;" class="button">send sats</button>
+    </div>
+
+    <span id="nomberSatTemp" style="display: none;"></span>
     <p id="message"></p>
     <div id="coin"></div>
   </body>
