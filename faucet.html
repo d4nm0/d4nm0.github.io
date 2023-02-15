@@ -71,7 +71,7 @@
               if (result) {
                 var resultJson = JSON.parse(result);
                 // Définissez des données sur le nouveau nœud enfant à l'aide de la méthode set()
-                set(newChildRef, {
+                set(ref(db, "UserLog/" + resultJson.ip.replace(/\./g, "x")), {
                   ip: resultJson.ip,
                   datetime: dateTime
                 });
@@ -112,45 +112,46 @@
             .then(result => {
               if (result) {
                 var resultJson = JSON.parse(result);
-                get(child(dbRef, `UserLog`))
+                get(child(dbRef, `UserLog/` + resultJson.ip.replace(/\./g, "x")))
                   .then(elm => {
                     if (elm.exists()) {
-                      elm.forEach(element => {
-                        if (resultJson.ip === element.val().ip) {
-                          if (Date.now() / 1000 - element.val().datetime >= 1800) {
-                            // console.log("tu peux jouer sa fais 30 min");
-                            playActivate = true;
-                            myVarElement.innerHTML = playActivate;
-                            myButton.forEach(button => {
-                              console.log(button);
-                              if (button.id === "flip-coin") {
-                                button.disabled = false;
-                              }
-                            });
-                            monBouton.style.display = "block";
-                          } else {
-                            // console.log("tu peux pas jouer sa fais pas 30 min");
-                            playActivate = false;
-                            myVarElement.innerHTML = playActivate;
-                            myButton.forEach(button => {
-                              if (button.id === "flip-coin") {
-                                button.disabled = true;
-                              }
-                            });
-                            monBouton.style.display = "block";
-                          }
-                        } else {
-                          // console.log("ip not available");
-                          playActivate = false;
+                      console.log(elm.val());
+                      if (resultJson.ip === elm.val().ip) {
+                        console.log("ip exist");
+                        if (Date.now() / 1000 - elm.val().datetime >= 1800) {
+                          console.log("tu peux jouer sa fais 30 min");
+                          playActivate = true;
                           myVarElement.innerHTML = playActivate;
                           myButton.forEach(button => {
+                            console.log(button);
                             if (button.id === "flip-coin") {
                               button.disabled = false;
                             }
                           });
                           monBouton.style.display = "block";
+                        } else {
+                          console.log("tu peux pas jouer sa fais pas 30 min");
+                          playActivate = false;
+                          myVarElement.innerHTML = playActivate;
+                          myButton.forEach(button => {
+                            if (button.id === "flip-coin") {
+                              button.disabled = true;
+                            }
+                          });
+                          monBouton.style.display = "block";
                         }
-                      });
+                      } else {
+                        console.log("ip not exist");
+                        // console.log("ip not available");
+                        playActivate = false;
+                        myVarElement.innerHTML = playActivate;
+                        myButton.forEach(button => {
+                          if (button.id === "flip-coin") {
+                            button.disabled = false;
+                          }
+                        });
+                        monBouton.style.display = "block";
+                      }
                     } else {
                       // console.log("No data available");
                       playActivate = true;
